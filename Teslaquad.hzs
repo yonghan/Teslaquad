@@ -1,0 +1,75 @@
+<!DOCTYPE CrossStudio_for_ARM_Session_File>
+<session>
+ <Bookmarks/>
+ <Breakpoints/>
+ <ETMWindow>
+  <ETMRegister number="0" value="800" />
+  <ETMRegister number="8" value="6f" />
+  <ETMRegister number="9" value="1000000" />
+ </ETMWindow>
+ <ExecutionCountWindow/>
+ <Memory1>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory1>
+ <Memory2>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory2>
+ <Memory3>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory3>
+ <Memory4>
+  <MemoryWindow autoEvaluate="0" addressText="" numColumns="8" sizeText="" dataSize="1" radix="16" addressSpace="" />
+ </Memory4>
+ <Project>
+  <ProjectSessionItem path="Teslaquad" name="unnamed" />
+  <ProjectSessionItem path="Teslaquad;Teslaquad" name="unnamed" />
+  <ProjectSessionItem path="Teslaquad;Teslaquad;Source Files" name="unnamed" />
+  <ProjectSessionItem path="Teslaquad;Teslaquad;Source Files;drivers" name="unnamed" />
+  <SourceCodeControlLogin password="5299878D024A7CFB6F2661DB29DDA801" repositoryRoot="/" provider="Subversion" localRoot="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad" user="yonghan@gmail.com" database="https://teslaquad.googlecode.com/svn/trunk/" />
+ </Project>
+ <Register1>
+  <RegisterWindow openNodes="" binaryNodes="" hiddenNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register1>
+ <Register2>
+  <RegisterWindow openNodes="" binaryNodes="" hiddenNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register2>
+ <Register3>
+  <RegisterWindow openNodes="" binaryNodes="" hiddenNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register3>
+ <Register4>
+  <RegisterWindow openNodes="" binaryNodes="" hiddenNodes="" unsignedNodes="" visibleGroups="" decimalNodes="" octalNodes="" asciiNodes="" />
+ </Register4>
+ <TargetWindow programAction="" uploadFileType="" programLoadAddress="" programSize="" uploadFileName="" uploadMemoryInterface="" programFileName="" uploadStartAddress="" programFileType="" uploadSize="" programMemoryInterface="" />
+ <TraceWindow>
+  <Trace enabled="Yes" />
+ </TraceWindow>
+ <Watch1>
+  <Watches active="1" update="Never" />
+ </Watch1>
+ <Watch2>
+  <Watches active="0" update="Never" />
+ </Watch2>
+ <Watch3>
+  <Watches active="0" update="Never" />
+ </Watch3>
+ <Watch4>
+  <Watches active="0" update="Never" />
+ </Watch4>
+ <Files>
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/main.c" y="28" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/main.c" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stm32f4xx_tim.h" y="1030" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stm32f4xx_tim.h" left="0" selected="0" name="unnamed" top="1021" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/motor_control.c" y="50" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/motor_control.c" left="0" selected="0" name="unnamed" top="48" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/motor_control.h" y="10" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/motor_control.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stm32f4xx_tim.c" y="408" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stm32f4xx_tim.c" left="0" selected="0" name="unnamed" top="408" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Library/Rowley Associates Limited/CrossWorks for ARM/packages/targets/STM32/STM32_Startup.s" y="1392" path="/Volumes/Home/yonghan/Library/Rowley Associates Limited/CrossWorks for ARM/packages/targets/STM32/STM32_Startup.s" left="0" selected="0" name="unnamed" top="1377" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stickIMU.c" y="54" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stickIMU.c" left="0" selected="1" name="unnamed" top="39" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_i2c.c" y="1620" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_i2c.c" left="0" selected="0" name="unnamed" top="1605" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stickIMU.h" y="18" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/stickIMU.h" left="0" selected="0" name="unnamed" top="0" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal.h" y="182" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal.h" left="0" selected="0" name="unnamed" top="174" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_usercallback.c" y="73" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_usercallback.c" left="0" selected="0" name="unnamed" top="51" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_conf.h" y="404" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_conf.h" left="0" selected="0" name="unnamed" top="156" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_i2c.h" y="55" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_i2c.h" left="0" selected="0" name="unnamed" top="41" />
+  <SessionOpenFile useTextEdit="1" useBinaryEdit="0" codecName="Latin1" x="0" debugPath="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_i2c_hal_stm32f4xx.c" y="0" path="/Volumes/Home/yonghan/Projects/stm32f4.projs/Teslaquad/cpal_i2c_hal_stm32f4xx.c" left="0" selected="0" name="unnamed" top="114" />
+ </Files>
+ <ARMCrossStudioWindow activeProject="Teslaquad" autoConnectTarget="ST-LINK/V2" debugSearchFileMap="" fileDialogInitialDirectory="/Volumes/Home/yonghan/Projects/LPCXpresso/workspace/Teslaquad/src/inc" fileDialogDefaultFilter="*.h" autoConnectCapabilities="266111" debugSearchPath="" buildConfiguration="THUMB Debug" />
+</session>
