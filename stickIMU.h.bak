@@ -14,9 +14,9 @@
 
 typedef enum
 {
-    ACCELEROMETER = 0x53,
-    GYROSCOPE     = 0x68,
-    MAGNETOMETER  = 0x1e
+    ACCELEROMETER = 0x53 << 1,
+    GYROSCOPE     = 0x68 << 1,
+    MAGNETOMETER  = 0x1e << 1
 } StickIMU_Device;
 
 void StickIMU_Init(uint32_t clockrate);

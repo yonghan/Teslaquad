@@ -1,0 +1,21 @@
+/*
+ * uart_dma.h
+ *
+ *  Created on: Mar 5, 2012
+ *      Author: yonghan
+ */
+
+#ifndef UART_DMA_H_
+#define UART_DMA_H_
+
+#include "stm32f4xx_conf.h"
+
+#define USER_TIMEOUT (uint32_t)0x64
+
+void USART1DMA1_Init(void);
+void UART1DMA1_Send(uint8_t *txbuf, uint8_t buflen);
+uint32_t UART1DMA1_SendString(char *buff);
+void TimeOut_UserCallback(void);
+void USART1_IRQHandler(void);
+
+#endif /* UART_DMA_H_ */

@@ -56,7 +56,7 @@ extern I2C_TypeDef* CPAL_I2C_DEVICE[];
 #ifdef CPAL_I2C_DMA_PROGMODEL
 extern DMA_TypeDef* CPAL_I2C_DMA[];
 
-#if defined (STM32F2XX)
+#if defined (STM32F4XX)
 extern DMA_Stream_TypeDef* CPAL_I2C_DMA_TX_Stream[]; 
 extern DMA_Stream_TypeDef* CPAL_I2C_DMA_RX_Stream[];
 #else

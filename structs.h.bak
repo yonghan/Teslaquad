@@ -7,7 +7,7 @@
 
 #ifndef STRUCTS_H_
 #define STRUCTS_H_
-
+#include "stm32f4xx_conf.h"
 
 typedef struct
 {

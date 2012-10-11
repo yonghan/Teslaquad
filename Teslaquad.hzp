@@ -6,10 +6,6 @@
     <folder Name="Source Files">
       <configuration Name="Common" filter="c;cpp;cxx;cc;h;s;asm;inc"/>
       <file file_name="main.c"/>
-      <file file_name="stm32f4xx.h"/>
-      <file file_name="stm32f4xx_conf.h"/>
-      <file file_name="system_stm32f4xx.h"/>
-      <file file_name="system_stm32f4xx.c"/>
       <folder Name="drivers">
         <file file_name="stm32f4xx_gpio.h"/>
         <file file_name="stm32f4xx_gpio.c"/>
@@ -19,10 +15,6 @@
         <file file_name="stm32f4xx_tim.h"/>
         <file file_name="misc.c"/>
         <file file_name="misc.h"/>
-        <file file_name="motor_control.c"/>
-        <file file_name="motor_control.h"/>
-        <file file_name="stickIMU.h"/>
-        <file file_name="stickIMU.c"/>
         <file file_name="stm32f4xx_i2c.c"/>
         <file file_name="stm32f4xx_i2c.h"/>
         <folder Name="cpal">
@@ -41,8 +33,30 @@
         <file file_name="stm32f4xx_usart.h"/>
         <file file_name="stm32f4xx_spi.c"/>
         <file file_name="stm32f4xx_usart.c"/>
+        <file file_name="stm32f4xx.h"/>
+        <file file_name="stm32f4xx_conf.h"/>
+        <file file_name="system_stm32f4xx.c"/>
+        <file file_name="system_stm32f4xx.h"/>
       </folder>
       <file file_name="structs.h"/>
+      <folder Name="AHRS">
+        <file file_name="AHRS_math.c"/>
+        <file file_name="DCM.c"/>
+        <file file_name="AHRS_math.h"/>
+        <file file_name="DCM.h"/>
+      </folder>
+      <file file_name="stm32f4xx_it.c"/>
+      <file file_name="stm32f4xx_it.h"/>
+      <file file_name="debug_output.h"/>
+      <file file_name="debug_output.c"/>
+      <file file_name="motor_control.c"/>
+      <file file_name="motor_control.h"/>
+      <file file_name="stickIMU.h"/>
+      <file file_name="stickIMU.c"/>
+      <file file_name="uart_int.h"/>
+      <file file_name="uart_int.c"/>
+      <file file_name="timers.h"/>
+      <file file_name="timers.c"/>
     </folder>
     <folder Name="System Files">
       <file file_name="$(StudioDir)/source/thumb_crt0.s"/>
@@ -54,7 +68,7 @@
     <configuration Name="THUMB Debug" double_is_float="Yes"/>
   </project>
   <configuration Name="THUMB Debug" inherited_configurations="THUMB;Debug"/>
-  <configuration Name="THUMB" Platform="ARM" arm_instruction_set="THUMB" arm_library_instruction_set="THUMB" c_preprocessor_definitions="__THUMB" hidden="Yes"/>
+  <configuration Name="THUMB" Platform="ARM" arm_instruction_set="ARM" arm_library_instruction_set="ARM" c_preprocessor_definitions="__THUMB" hidden="Yes"/>
   <configuration Name="Debug" c_preprocessor_definitions="DEBUG" gcc_debugging_level="Level 2" gcc_optimization_level="None" hidden="Yes"/>
   <configuration Name="THUMB Release" inherited_configurations="THUMB;Release"/>
   <configuration Name="Release" c_preprocessor_definitions="NDEBUG" gcc_debugging_level="Level 1" gcc_optimization_level="Level 1" hidden="Yes"/>

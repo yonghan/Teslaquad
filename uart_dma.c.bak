@@ -1,0 +1,188 @@
+/*
+ * uart_dma.c
+ *
+ *  Created on: May 27, 2012
+ *      Author: Yonghan Ching
+ */
+
+#include "uart_dma.h"
+
+DMA_InitTypeDef DMA_InitStructure;
+uint8_t RxBuffer[25];
+uint8_t RxBufferReadIndex = 0;
+uint8_t RxBufferWriteIndex = 0;
+__IO uint32_t TimeOut = 0x0;  
+
+// USART1 with DMA1
+void USART1DMA1_Init(void)
+{
+    USART_InitTypeDef USART_InitStructure;
+     NVIC_InitTypeDef NVIC_InitStructure;
+     GPIO_InitTypeDef GPIO_InitStructure;
+
+    /* Peripheral Clock Enable -------------------------------------------------*/
+    /* Enable GPIO clock */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+
+    /* Enable USART clock */
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+
+    /* Enable the DMA clock */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
+
+    /* USART1 GPIO configuration -----------------------------------------------*/ 
+    /* Connect USART pins to AF7 */
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);
+
+    /* Configure USART Tx and Rx as alternate function push-pull */
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    
+    /* USART1 configuration ----------------------------------------------------*/
+    /* Enable the USART OverSampling by 8 */
+    USART_OverSampling8Cmd(USART1, ENABLE); 
+
+    USART_StructInit(&USART_InitStructure);
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(USART1, &USART_InitStructure);
+
+    /* Configure DMA controller to manage USART TX and RX DMA request ----------*/  
+    DMA_InitStructure.DMA_PeripheralBaseAddr = ((uint32_t)USART1) ;
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+    DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Enable;
+    DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;
+    DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;
+    DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;
+
+    /* Here only the unchanged parameters of the DMA initialization structure are
+    configured. During the program operation, the DMA will be configured with 
+    different parameters according to the operation phase */
+
+    /* NVIC configuration */
+    /* Configure the Priority Group to 2 bits */
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+
+    /* Enable the USART1 Interrupt */
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+    /* Enable the USART1 Rx Data register Not Empty Interrupt */
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
+
+    /* Enable USART */
+    USART_Cmd(USART1, ENABLE);
+}
+
+void UART1DMA1_Send(uint8_t *txbuf, uint8_t buflen)
+{
+    DMA_DeInit(DMA2_Stream7);
+    DMA_InitStructure.DMA_Channel = DMA_Channel_4;
+    DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)txbuf;
+    DMA_InitStructure.DMA_BufferSize = buflen;
+    DMA_Init(DMA2_Stream7, &DMA_InitStructure);
+    
+    /* Enable the USART DMA requests */
+    USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);
+
+    /* Clear the TC bit in the SR register by writing 0 to it */
+    USART_ClearFlag(USART1, USART_FLAG_TC);
+
+    /* Enable the DMA TX Stream, USART will start sending the command code (2bytes) */
+    DMA_Cmd(DMA2_Stream7, ENABLE);
+
+    /* Wait the USART DMA Tx transfer complete or time out */
+    TimeOut = USER_TIMEOUT; 
+    while ((DMA_GetFlagStatus(DMA2_Stream7, DMA_FLAG_TCIF3) == RESET)&&(TimeOut != 0));
+
+    if(TimeOut == 0)
+    {
+        TimeOut_UserCallback();
+    } 
+
+    /* The software must wait until TC=1. The TC flag remains cleared during all data
+     transfers and it is set by hardware at the last frames end of transmission*/
+    TimeOut = USER_TIMEOUT;
+    while ((USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)&&(TimeOut != 0));
+
+    if(TimeOut == 0)
+    {
+        TimeOut_UserCallback();
+    }      
+
+    /* Clear DMA Streams flags */
+    DMA_ClearFlag(DMA2_Stream7, DMA_FLAG_HTIF3 | DMA_FLAG_TCIF3);                                    
+    /* Disable the DMA Streams */
+    DMA_Cmd(DMA2_Stream7, DISABLE);
+    /* Disable the USART Tx DMA request */
+    USART_DMACmd(USART1, USART_DMAReq_Tx, DISABLE);
+}
+
+uint32_t UART1DMA1_SendString(char *buff)
+{
+    uint32_t i = 0;
+
+    // Get the exact length of the buffer
+    while(buff[i] != '\0') { i++; }
+    UART1DMA1_Send((uint8_t *)buff, i);
+    return i;
+}
+
+void TimeOut_UserCallback(void)
+{
+}
+
+void USART1_IRQHandler(void)
+{
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) == SET)
+    {
+        UART1DMA1_Receive();
+        USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    }
+}
+
+void UART1DMA1_Receive(void)
+{
+    DMA_DeInit(DMA2_Stream5);
+    DMA_InitStructure.DMA_Channel = DMA_Channel_4;
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory; 
+
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)RxBuffer;
+    DMA_InitStructure.DMA_BufferSize = (uint16_t)10;
+    DMA_Init(DMA1_Stream1, &DMA_InitStructure);
+    
+    /* Enable the USART Rx DMA request */
+    USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);   
+    /* Enable the DMA RX Stream */
+    DMA_Cmd(DMA2_Stream5, ENABLE);
+    
+    /* Wait the USART DMA Rx transfer complete (to receive the transaction command) */
+    while (DMA_GetFlagStatus(DMA2_Stream5, DMA_FLAG_TCIF1) == RESET);      
+
+    /* Clear all DMA Streams flags */
+    DMA_ClearFlag(DMA2_Stream5, DMA_FLAG_HTIF1 | DMA_FLAG_TCIF1); 
+                                        
+    /* Disable the DMA Rx Stream */
+    DMA_Cmd(DMA2_Stream5, DISABLE);
+
+    /* Disable the USART Rx DMA requests */
+    USART_DMACmd(USART1, USART_DMAReq_Rx, DISABLE);
+}

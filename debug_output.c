@@ -1,0 +1,246 @@
+/*
+ * debug_output.c
+ *
+ *  Created on: Mar 19, 2012
+ *      Author: yonghan
+ */
+
+#include "debug_output.h"
+
+#include "uart_int.h"
+#include "AHRS_math.h"
+#include <stdio.h>
+
+int16_t accel_min[3];
+int16_t accel_max[3];
+int16_t magnet_min[3];
+int16_t magnet_max[3];
+float gyro_average[3];
+uint32_t gyro_num_samples = 0;
+
+char b[15];
+char sizeofb = sizeof(b);
+
+// Reset calibration session if reset_calibration_session_flag is set
+void _checkResetCalibrationSession(IMUData_t *imu_Raw)
+{
+    // Raw sensor values have to be read already, but no error compensation applied
+
+    // Reset this calibration session?
+    if (!reset_calibrationSessionFlag) return;
+
+    // Reset acc and mag calibration variables
+    accel_min[0] = accel_max[0] = imu_Raw->AccelX;
+    accel_min[1] = accel_max[1] = imu_Raw->AccelY;
+    accel_min[2] = accel_max[2] = imu_Raw->AccelZ;
+    magnet_min[0] = magnet_max[0] = imu_Raw->MagnetX;
+    magnet_min[1] = magnet_max[1] = imu_Raw->MagnetY;
+    magnet_min[2] = magnet_max[2] = imu_Raw->MagnetZ;
+
+
+
+    // Reset gyro calibration variables
+    gyro_num_samples = 0;  // Reset gyro calibration averaging
+    gyro_average[0] = gyro_average[1] = gyro_average[2] = 0.0f;
+
+    reset_calibrationSessionFlag = FALSE;
+}
+
+// Output angles: yaw, pitch, roll
+void _outputAngles(eulerAngle_t *e)
+{
+    if(output_mode == OUTPUT__MODE_ANGLES_BINARY)
+    {
+        float ypr[3];
+        ypr[0] = TO_DEG(e->Yaw);
+        ypr[1] = TO_DEG(e->Pitch);
+        ypr[2] = TO_DEG(e->Roll);
+        USARTSend((USART_TypeDef *)USART2, (uint8_t *)ypr, 12); // No new-line
+    }
+    else if(output_mode == OUTPUT__MODE_ANGLES_TEXT)
+    {
+        USARTSendString((USART_TypeDef *)USART2, "#YPR=");
+        snprintf(b, sizeofb, "%f", TO_DEG(e->Yaw));
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, ",");
+        snprintf(b, sizeofb, "%f", TO_DEG(e->Pitch));
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, ",");
+        snprintf(b, sizeofb, "%f", TO_DEG(e->Roll));
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "\n\r");
+    }
+}
+
+void _outputCalibration(uint8_t s, IMUData_t *imu_Raw)
+{
+    if (s == 0) // Accelerometer
+    {
+        // Output MIN/MAX values
+        USARTSendString((USART_TypeDef *)USART2, "accel x,y,z (min/max) = ");
+        if (imu_Raw->AccelX < accel_min[0])
+                accel_min[0] = imu_Raw->AccelX;
+        if (imu_Raw->AccelX > accel_max[0])
+                accel_max[0] = imu_Raw->AccelX;
+        snprintf(b, sizeofb, "%d", accel_min[0]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%d", accel_max[0]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "  ");
+
+        if (imu_Raw->AccelY < accel_min[1])
+                accel_min[1] = imu_Raw->AccelY;
+        if (imu_Raw->AccelY > accel_max[1])
+                accel_max[1] = imu_Raw->AccelY;
+        snprintf(b, sizeofb, "%d", accel_min[1]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%d", accel_max[1]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "  ");
+
+        if (imu_Raw->AccelZ < accel_min[2])
+                accel_min[2] = imu_Raw->AccelZ;
+        if (imu_Raw->AccelZ > accel_max[2])
+                accel_max[2] = imu_Raw->AccelZ;
+        snprintf(b, sizeofb, "%d", accel_min[2]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%d", accel_max[2]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "\n\r");
+    }
+    else if (s == 1) // Magnetometer
+    {
+        // Output MIN/MAX values
+        USARTSendString((USART_TypeDef *)USART2, "magn x,y,z (min/max) = ");
+        if (imu_Raw->MagnetX < magnet_min[0])
+                magnet_min[0] = imu_Raw->MagnetX;
+        if (imu_Raw->MagnetX > magnet_max[0])
+                magnet_max[0] = imu_Raw->MagnetX;
+        snprintf(b, sizeofb, "%d", magnet_min[0]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%d", magnet_max[0]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "  ");
+
+        if (imu_Raw->AccelY < magnet_min[1])
+                magnet_min[1] = imu_Raw->AccelY;
+        if (imu_Raw->AccelY > magnet_max[1])
+                magnet_max[1] = imu_Raw->AccelY;
+        snprintf(b, sizeofb, "%d", magnet_min[1]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%d", magnet_max[1]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "  ");
+
+        if (imu_Raw->AccelZ < magnet_min[2])
+                magnet_min[2] = imu_Raw->AccelZ;
+        if (imu_Raw->AccelZ > magnet_max[2])
+                magnet_max[2] = imu_Raw->AccelZ;
+        snprintf(b, sizeofb, "%d", magnet_min[2]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%d", magnet_max[2]);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "\n\r");
+    }
+    else if (s == 2)  // Gyroscope
+    {
+
+        // Average gyro values
+        gyro_average[0] += imu_Raw->GyroX;
+        gyro_average[1] += imu_Raw->GyroY;
+        gyro_average[2] += imu_Raw->GyroZ;
+        gyro_num_samples++;
+
+        // Output current and averaged gyroscope values
+        USARTSendString((USART_TypeDef *)USART2, "gyro x,y,z (current/average) = ");
+
+        snprintf(b, sizeofb, "%d", imu_Raw->GyroX);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%f", gyro_average[0] / (float) gyro_num_samples);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "  ");
+
+        snprintf(b, sizeofb, "%d", imu_Raw->GyroY);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%f", gyro_average[1] / (float) gyro_num_samples);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "  ");
+
+        snprintf(b, sizeofb, "%d", imu_Raw->GyroZ);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "/");
+        snprintf(b, sizeofb, "%f", gyro_average[2] / (float) gyro_num_samples);
+        USARTSendString((USART_TypeDef *)USART2, b);
+        USARTSendString((USART_TypeDef *)USART2, "\n\r");
+    }
+}
+
+void _outputSensors(IMUData_t *imu_data)
+{
+    USARTSendString((USART_TypeDef *)USART2, "#ACC=");
+    snprintf(b, sizeofb, "%f", imu_data->AccelX);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+    snprintf(b, sizeofb, "%f", imu_data->AccelY);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+    snprintf(b, sizeofb, "%f", imu_data->AccelZ);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, "\n\r");
+
+
+    USARTSendString((USART_TypeDef *)USART2, "#MAG=");
+    snprintf(b, sizeofb, "%f", imu_data->MagnetX);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+    snprintf(b, sizeofb, "%f", imu_data->MagnetY);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+    snprintf(b, sizeofb, "%f", imu_data->MagnetZ);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, "\n\r");
+
+    USARTSendString((USART_TypeDef *)USART2, "#GYR=");
+    snprintf(b, sizeofb, "%f", imu_data->GyroX);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+    snprintf(b, sizeofb, "%f", imu_data->GyroY);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+    snprintf(b, sizeofb, "%f", imu_data->GyroZ);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, "\n\r");
+}
+
+void _outputErrorCounts(void)
+{
+    USARTSendString((USART_TypeDef *)USART2, "#AMG-ERR: ");
+    snprintf(b, sizeofb, "%d", num_accelErrors);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+
+    snprintf(b, sizeofb, "%d", num_magnetErrors);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, ",");
+
+
+    snprintf(b, sizeofb, "%d", num_gyroErrors);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, "\n\r");
+}
+
+void _outputIteration(uint32_t iterations)
+{
+    USARTSendString((USART_TypeDef *)USART2, "#i: ");
+    snprintf(b, sizeofb, "%d", iterations);
+    USARTSendString((USART_TypeDef *)USART2, b);
+    USARTSendString((USART_TypeDef *)USART2, "\n\r");
+}

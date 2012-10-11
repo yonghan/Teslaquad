@@ -52,9 +52,9 @@ void StickIMU_Init(uint32_t clockrate)
 ErrorStatus StickIMU_WriteRegister(StickIMU_Device device, uint8_t reg, uint8_t val)
 {
     stickIMUTx.wNumData = 1;
-    stickIMUTx.wAddr1 = device << 1;
+    stickIMUTx.wAddr1 = device;
     stickIMUTx.wAddr2 = reg;
-    stickIMUTxBuff = val; 
+    stickIMUTxBuff = val;
     I2C1_DevStructure.CPAL_Direction = CPAL_DIRECTION_TX;
 
     if (CPAL_I2C_Write(&I2C1_DevStructure) != CPAL_PASS)
@@ -73,6 +73,7 @@ ErrorStatus StickIMU_ReadRegister(StickIMU_Device device, uint8_t reg)
     stickIMURx.wNumData = 6;
     stickIMURx.wAddr1 = device;
     stickIMURx.wAddr2 = reg;
+    I2C1_DevStructure.CPAL_Direction = CPAL_DIRECTION_RX;
 
     if (CPAL_I2C_Read(&I2C1_DevStructure) != CPAL_PASS)
     {

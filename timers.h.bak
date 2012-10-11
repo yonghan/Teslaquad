@@ -1,0 +1,11 @@
+/*
+ * timers.h
+ *
+ *  Created on: Sep 22, 2012
+ *      Author: Yonghan Ching
+ */
+
+#ifndef STICKIMU_H_
+#define STICKIMU_H_
+
+#include "stm32f4xx_conf.h"
